@@ -2,6 +2,8 @@
 
 **Understand how your mix compares to a reference track.**
 
+[![Windows build and tests](https://github.com/adidroga/MixDebugger/actions/workflows/build.yml/badge.svg)](https://github.com/adidroga/MixDebugger/actions/workflows/build.yml)
+
 MixDebugger is a local, offline audio analyser for mixes, pre-masters and finished
 masters. Load two tracks, select comparable passages and see their differences in
 loudness, dynamics, tonal balance and stereo. Listen with loudness-matched A/B
@@ -50,6 +52,11 @@ mix. Level-independent band shares separate tonal differences from the simple
 fact that one file is louder. See [measurement definitions](docs/measurements.md).
 
 ## Build on Windows
+
+Development builds are available from successful runs of
+[Windows build and tests](https://github.com/adidroga/MixDebugger/actions/workflows/build.yml).
+Open a completed run and download the **MixDebugger-Windows-x64** artifact
+(GitHub sign-in may be required). These are development builds, not signed releases.
 
 Requirements: Visual Studio 2022 Build Tools with **Desktop development with C++**,
 Windows SDK, CMake 3.25+, Git and network access for the initial dependency fetch.

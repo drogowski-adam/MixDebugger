@@ -18,3 +18,15 @@ jobs:
         run: |
           $process = Start-Process -FilePath build/msvc-debug/dist/Release/MixDebuggerSetup.exe -ArgumentList '--verify' -WindowStyle Hidden -Wait -PassThru
           if ($process.ExitCode -ne 0) { throw 'Installer payload verification failed' }
+      - name: Upload Windows application and installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: MixDebugger-Windows-x64
+          if-no-files-found: error
+          path: |
+            build/msvc-debug/app/MixDebuggerApp_artefacts/Release/MixDebugger.exe
+            build/msvc-debug/bridge/Release/reaper_mixdebugger.dll
+            build/msvc-debug/dist/Release/MixDebuggerSetup.exe
+            README.md
+            THIRD_PARTY_NOTICES.md
+            docs/*.md
