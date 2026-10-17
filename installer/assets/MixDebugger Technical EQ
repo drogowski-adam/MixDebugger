@@ -1,0 +1,36 @@
+desc:MixDebugger Technical EQ
+// Jednopasmowy, jawny filtr używany wyłącznie przez techniczny plan MixDebugger.
+
+slider1:1000<50,16000,1>Frequency (Hz)
+slider2:-2<-6,0,0.1>Gain (dB)
+slider3:1<0.3,4,0.01>Q
+
+@slider
+frequency = min(16000, max(50, slider1));
+gain_db = min(0, max(-6, slider2));
+q = min(4, max(0.3, slider3));
+a = 10 ^ (gain_db / 40);
+omega = 2 * $pi * frequency / srate;
+alpha = sin(omega) / (2 * q);
+cosine = cos(omega);
+b0 = 1 + alpha * a;
+b1 = -2 * cosine;
+b2 = 1 - alpha * a;
+a0 = 1 + alpha / a;
+a1 = -2 * cosine;
+a2 = 1 - alpha / a;
+b0 /= a0;
+b1 /= a0;
+b2 /= a0;
+a1 /= a0;
+a2 /= a0;
+
+@sample
+left = b0 * spl0 + z1l;
+z1l = b1 * spl0 - a1 * left + z2l;
+z2l = b2 * spl0 - a2 * left;
+right = b0 * spl1 + z1r;
+z1r = b1 * spl1 - a1 * right + z2r;
+z2r = b2 * spl1 - a2 * right;
+spl0 = left;
+spl1 = right;

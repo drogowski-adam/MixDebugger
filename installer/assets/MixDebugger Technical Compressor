@@ -1,0 +1,35 @@
+desc:MixDebugger Technical Compressor
+// Przejrzysty kompresor poziomujący. Detektor RMS odpowiada modelowi,
+// z którego MixDebugger wylicza threshold i docelową redukcję.
+
+slider1:-24<-60,0,0.1>Threshold (dBFS)
+slider2:2.5<1,10,0.1>Ratio
+slider3:20<0.1,200,0.1>Attack (ms)
+slider4:100<5,1000,1>Release (ms)
+slider5:0<0,12,0.1>Makeup (dB)
+
+@init
+gain_reduction_db = 0;
+detector_power = 0;
+detector_coeff = exp(-1 / (0.010 * srate));
+
+@slider
+threshold = min(0, max(-60, slider1));
+ratio = min(10, max(1, slider2));
+attack_coeff = exp(-1 / (max(0.1, slider3) * 0.001 * srate));
+release_coeff = exp(-1 / (max(5, slider4) * 0.001 * srate));
+makeup = slider5;
+
+@sample
+instant_power = 0.5 * (spl0 * spl0 + spl1 * spl1);
+detector_power = detector_coeff * detector_power
+               + (1 - detector_coeff) * instant_power;
+level_db = 10 * log(max(detector_power, 0.000000000001)) / log(10);
+over_db = max(0, level_db - threshold);
+target_reduction_db = -over_db * (1 - 1 / ratio);
+coefficient = target_reduction_db < gain_reduction_db ? attack_coeff : release_coeff;
+gain_reduction_db = coefficient * gain_reduction_db
+                  + (1 - coefficient) * target_reduction_db;
+gain = 10 ^ ((gain_reduction_db + makeup) / 20);
+spl0 *= gain;
+spl1 *= gain;

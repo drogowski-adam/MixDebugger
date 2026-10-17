@@ -1,0 +1,20 @@
+name: Windows build and tests
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  windows:
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure
+        run: cmake --preset msvc-debug
+      - name: Build
+        run: cmake --build --preset msvc-release --parallel 4
+      - name: Test
+        run: ctest --test-dir build/msvc-debug -C Release --output-on-failure
+      - name: Verify installer payload
+        shell: pwsh
+        run: |
+          $process = Start-Process -FilePath build/msvc-debug/dist/Release/MixDebuggerSetup.exe -ArgumentList '--verify' -WindowStyle Hidden -Wait -PassThru
+          if ($process.ExitCode -ne 0) { throw 'Installer payload verification failed' }
